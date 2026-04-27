@@ -2,7 +2,6 @@ package com.trycatchus.echoo.service;
 
 import java.time.Instant;
 
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -13,7 +12,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import com.trycatchus.echoo.config.JwtProperties;
-import com.trycatchus.echoo.dto.HttpEntity;
 import com.trycatchus.echoo.dto.payload.login.LoginPayload;
 import com.trycatchus.echoo.dto.responses.login.AuthResponse;
 import com.trycatchus.echoo.exception.ApplicationException;
@@ -35,7 +33,7 @@ public class Auth0JwtService implements AuthService {
     }
 
     @Override
-    public HttpEntity<AuthResponse> loginAsync(LoginPayload payload) {
+    public AuthResponse loginAsync(LoginPayload payload) {
 
         var user = userRepo.findByEmail(payload.email())
                 .orElseThrow(() -> new ApplicationException(404, "User not found."));
@@ -61,11 +59,7 @@ public class Auth0JwtService implements AuthService {
             throw new ApplicationException(500, "Claims couldn't be converted.");
         }
 
-        var response = new AuthResponse("Successful login.", token, user.getId());
-
-        return new HttpEntity<AuthResponse>(
-                HttpStatusCode.valueOf(200),
-                response);
+        return new AuthResponse(token, user.getId());
     }
 
     @Override
