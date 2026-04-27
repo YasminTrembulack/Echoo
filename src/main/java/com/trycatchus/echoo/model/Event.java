@@ -34,18 +34,18 @@ public class Event extends BaseEntity {
 
     private Integer capacity;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EventStatus status;
+    @Column(name = "event_status", nullable = false)
+    private EventStatus eventStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @ManyToOne(fetch = FetchType.LAZY)

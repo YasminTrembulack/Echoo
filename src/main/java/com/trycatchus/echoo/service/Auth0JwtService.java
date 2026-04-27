@@ -54,7 +54,7 @@ public class Auth0JwtService implements AuthService {
             token = JWT.create()
                     .withIssuer("echoo-api")
                     .withClaim("userId", user.getId().toString())
-                    .withClaim("role", user.getRole().name())
+                    .withClaim("role", user.getUserRole().name())
                     .withExpiresAt(Instant.now().plusSeconds(jwtProperties.getExpirationSeconds()))
                     .sign(algorithm);
         } catch (JWTCreationException ex) {

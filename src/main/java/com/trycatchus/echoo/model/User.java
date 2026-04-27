@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     @Column(length = 100, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 14, unique = true, nullable = false)
+    @Column(length = 11, unique = true, nullable = false)
     private String cpf;
 
     @Column(name = "birth_date")
@@ -47,7 +47,7 @@ public class User extends BaseEntity {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @Column(name = "user_role", nullable = false)
+    private UserRole userRole;
 
 }
