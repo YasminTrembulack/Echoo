@@ -1,12 +1,8 @@
 package com.trycatchus.echoo.exception;
 
-import org.springframework.http.HttpStatusCode;
-
 import com.trycatchus.echoo.dto.responses.ErrorResponse;
 
-
 public class ApplicationException extends RuntimeException {
-    private HttpStatusCode statusCode;
     private ErrorResponse errorResponse;
 
     public void setErrorResponse(ErrorResponse errorResponse) {
@@ -18,8 +14,7 @@ public class ApplicationException extends RuntimeException {
             String message
     ) {
         super();
-        this.statusCode = HttpStatusCode.valueOf(statusCode);
-        this.errorResponse = new ErrorResponse(message);
+        this.errorResponse = new ErrorResponse(statusCode, message);
     }
 
     public ApplicationException(
@@ -28,12 +23,7 @@ public class ApplicationException extends RuntimeException {
             Throwable cause
     ) {
         super(cause);
-        this.statusCode = HttpStatusCode.valueOf(statusCode);
-        this.errorResponse = new ErrorResponse(message);
-    }
-
-    public HttpStatusCode getStatusCode() {
-        return statusCode;
+        this.errorResponse = new ErrorResponse(statusCode,message);
     }
 
     public ErrorResponse getErrorResponse() {

@@ -1,4 +1,4 @@
 package com.trycatchus.echoo.dto.responses;
 
-public record ErrorResponse(String message)
+public record ErrorResponse(Integer statusCode, String message) 
 { }
