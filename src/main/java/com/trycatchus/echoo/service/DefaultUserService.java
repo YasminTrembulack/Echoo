@@ -1,12 +1,16 @@
 package com.trycatchus.echoo.service;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.trycatchus.echoo.dto.payload.UserPayload;
+import com.trycatchus.echoo.dto.payload.user.UserPayload;
+import com.trycatchus.echoo.dto.payload.user.UserUpdatePayload;
 import com.trycatchus.echoo.dto.responses.UserResponse;
 import com.trycatchus.echoo.dto.system.PasswordVerification;
+import com.trycatchus.echoo.exception.EntityNotFoundException;
 import com.trycatchus.echoo.exception.PasswordValidationException;
 import com.trycatchus.echoo.exception.UniqueFieldAlreadyInUseException;
 import com.trycatchus.echoo.interfaces.PasswordService;
@@ -14,6 +18,7 @@ import com.trycatchus.echoo.interfaces.UserService;
 import com.trycatchus.echoo.mapper.UserMapper;
 import com.trycatchus.echoo.model.User;
 import com.trycatchus.echoo.repository.UserRepository;
+import com.trycatchus.echoo.utils.UpdateUtils;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -30,7 +35,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public UserResponse create(UserPayload request) {
-        validateUniqueFields(request);
+        validateUniqueFields(request.email(), request.cpf(), request.username(), null);
 
         PasswordVerification passwordValid = passwordService.verifyPrerequisites(request.password());
 
@@ -46,19 +51,16 @@ public class DefaultUserService implements UserService {
         return userMapper.toResponse(newUser);
     }
 
-    private void validateUniqueFields(UserPayload request) {
-        List<User> conflicts = userRepo.findConflictingUsers(
-            request.email(),
-            request.cpf(),
-            request.username()
-        );
+    private void validateUniqueFields(String email, String cpf, String username, String excludeId) {
+        List<User> conflicts = userRepo.findConflictingUsers(email, cpf, username);
 
         List<String> errors = new java.util.ArrayList<>();
 
         for (User u : conflicts) {
-            if (u.getEmail().equals(request.email())) errors.add("email");
-            if (u.getCpf().equals(request.cpf())) errors.add("cpf");
-            if (u.getUsername().equals(request.username())) errors.add("username");
+            if (excludeId != null && u.getId().equals(UUID.fromString(excludeId))) continue; // Skip the user being updated
+            if (u.getEmail().equals(email)) errors.add("email");
+            if (u.getCpf().equals(cpf)) errors.add("cpf");
+            if (u.getUsername().equals(username)) errors.add("username");
         }
 
         if (!errors.isEmpty()) {
@@ -67,27 +69,46 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public UserResponse update(String id, UserPayload request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public UserResponse update(String id, UserUpdatePayload request) {
+        validateUniqueFields(request.email(), request.cpf(), request.username(), id);
+
+        var user = userRepo.findById(UUID.fromString(id))
+            .orElseThrow(() -> new EntityNotFoundException(User.class));
+
+        user.setFirstName(UpdateUtils.valueOrKeep(request.firstName(), user.getFirstName()));
+        user.setLastName(UpdateUtils.valueOrKeep(request.lastName(), user.getLastName()));
+        user.setUsername(UpdateUtils.valueOrKeep(request.username(), user.getUsername()));
+        user.setEmail(UpdateUtils.valueOrKeep(request.email(), user.getEmail()));
+        user.setCpf(UpdateUtils.valueOrKeep(request.cpf(), user.getCpf()));
+
+        if (request.password() != null && !request.password().isBlank())
+            user.setPasswordHash(passwordService.applyCriptography(request.password()));
+
+        User updatedUser = userRepo.save(user);
+        return userMapper.toResponse(updatedUser);
     }
 
     @Override
     public void delete(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        var user = userRepo.findById(UUID.fromString(id))
+            .orElseThrow(() -> new EntityNotFoundException(User.class));
+
+        userRepo.delete(user);
     }
 
     @Override
     public UserResponse findById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        var user = userRepo.findById(UUID.fromString(id))
+            .orElseThrow(() -> new EntityNotFoundException(User.class));
+
+        return userMapper.toResponse(user);
     }
 
     @Override
     public List<UserResponse> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        var users = userRepo.findAll();
+
+        return users.stream().map(userMapper::toResponse).collect(Collectors.toList());
     }
 
 }
