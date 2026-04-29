@@ -1,7 +1,6 @@
 package com.trycatchus.echoo.service;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -15,8 +14,8 @@ import com.auth0.jwt.interfaces.Verification;
 
 import com.trycatchus.echoo.config.JwtProperties;
 import com.trycatchus.echoo.dto.payload.auth.LoginPayload;
-import com.trycatchus.echoo.dto.responses.UserResponse;
 import com.trycatchus.echoo.dto.responses.auth.AuthResponse;
+import com.trycatchus.echoo.dto.responses.auth.UserDecodedResponse;
 import com.trycatchus.echoo.exception.JwtCreationException;
 import com.trycatchus.echoo.exception.PasswordMismatchException;
 import com.trycatchus.echoo.exception.EmptyTokenException;
@@ -24,7 +23,6 @@ import com.trycatchus.echoo.exception.EntityNotFoundException;
 import com.trycatchus.echoo.exception.InvalidTokenException;
 import com.trycatchus.echoo.interfaces.AuthService;
 import com.trycatchus.echoo.interfaces.PasswordService;
-import com.trycatchus.echoo.mapper.UserMapper;
 import com.trycatchus.echoo.model.User;
 import com.trycatchus.echoo.repository.UserRepository;
 
@@ -36,18 +34,15 @@ public class Auth0JwtService implements AuthService {
     private final JwtProperties jwtProperties;
     private final UserRepository userRepo;
     private final PasswordService passwordService;
-    private final UserMapper userMapper;
 
     public Auth0JwtService(
         UserRepository userRepo, 
         PasswordService passwordService, 
-        JwtProperties jwtProperties, 
-        UserMapper userMapper
+        JwtProperties jwtProperties
     ) {
         this.userRepo = userRepo;
         this.passwordService = passwordService;
         this.jwtProperties = jwtProperties;
-        this.userMapper = userMapper;
     }
 
     @Override
@@ -68,7 +63,19 @@ public class Auth0JwtService implements AuthService {
     }
 
     @Override
-    public UserResponse verifyToken(String auth) {
+    public UserDecodedResponse verifyToken(String auth) {
+        DecodedJWT decodedToken = decodeToken(auth);
+
+        return new UserDecodedResponse(
+            decodedToken.getClaim("userId").asString(),
+            decodedToken.getClaim("firstName").asString(),
+            decodedToken.getClaim("username").asString(),
+            decodedToken.getClaim("role").asString()
+        );
+    }
+
+    @Override
+    public DecodedJWT decodeToken(String auth) {
         String token = extractBearerToken(auth);
 
         if (token == null || token.isEmpty())
@@ -77,21 +84,13 @@ public class Auth0JwtService implements AuthService {
         Algorithm algorithm = Algorithm.HMAC256(jwtProperties.getSecret());
         Verification verification = JWT.require(algorithm).withIssuer("echoo-api");
 
-        DecodedJWT decodedToken;
-    
         try {
             JWTVerifier verifier = verification.build();
-            decodedToken = verifier.verify(token);
+            return verifier.verify(token);
             
         } catch (JWTVerificationException ex) {
             throw new InvalidTokenException();
         }
-        String userId = decodedToken.getClaim("userId").asString();
-
-        User user = userRepo.findById(UUID.fromString(userId))
-            .orElseThrow(() -> new EntityNotFoundException(User.class));
-
-        return userMapper.toResponse(user);
     }
 
     private String extractBearerToken(String auth) {
@@ -111,6 +110,7 @@ public class Auth0JwtService implements AuthService {
 
             return JWT.create()
                     .withIssuer("echoo-api")
+                    .withClaim("username", user.getUsername())
                     .withClaim("firstName", user.getFirstName())
                     .withClaim("userId", user.getId().toString())
                     .withClaim("role", user.getUserRole().name())

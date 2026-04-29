@@ -1,4 +1,4 @@
-package com.trycatchus.echoo.filters;
+package com.trycatchus.echoo.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.trycatchus.echoo.dto.responses.ErrorResponse;
-import com.trycatchus.echoo.exception.ApplicationException;
 
 
 @ControllerAdvice
