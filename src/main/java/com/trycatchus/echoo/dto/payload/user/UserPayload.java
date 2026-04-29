@@ -1,8 +1,14 @@
-package com.trycatchus.echoo.dto.payload;
+package com.trycatchus.echoo.dto.payload.user;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
+
+import com.trycatchus.echoo.enums.UserRole;
+
 
 public record UserPayload(
 
@@ -18,7 +24,7 @@ public record UserPayload(
         @NotBlank(message = "Field 'cpf' is required")
         String cpf,
 
-        String birthDate,
+        LocalDate birthDate,
 
         @Email(message = "Invalid email")
         @NotBlank(message = "Field 'email' is required")
@@ -28,7 +34,7 @@ public record UserPayload(
         @Size(min = 8, message = "Field 'password' must have at least 8 characters")
         String password,
 
-        @NotBlank(message = "Field 'userRole' is required")
-        String userRole
+        @NotNull(message = "Field 'userRole' is required")
+        UserRole userRole
 
 ) {}
