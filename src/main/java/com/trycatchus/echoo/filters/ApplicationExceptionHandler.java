@@ -25,7 +25,8 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-        var errorResponse = new ErrorResponse(500, "An unexpected error occurred.");
-        return ResponseEntity.status(errorResponse.statusCode()).body(errorResponse);
+        ex.printStackTrace();
+        ErrorResponse errorResponse = new ErrorResponse(500, "Internal server error");
+        return ResponseEntity.status(500).body(errorResponse);
     }
 }
