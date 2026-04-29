@@ -6,29 +6,29 @@ import jakarta.validation.constraints.Email;
 
 public record UserPayload(
 
-        @NotBlank(message = "First name is required")
+        @NotBlank(message = "Field 'firstName' is required")
         String firstName,
 
-        @NotBlank(message = "Last name is required")
+        @NotBlank(message = "Field 'lastName' is required")
         String lastName,
 
-        @NotBlank(message = "Username is required")
+        @NotBlank(message = "Field 'username' is required")
         String username,
 
-        @NotBlank(message = "CPF is required")
+        @NotBlank(message = "Field 'cpf' is required")
         String cpf,
 
         String birthDate,
 
         @Email(message = "Invalid email")
-        @NotBlank(message = "Email is required")
+        @NotBlank(message = "Field 'email' is required")
         String email,
 
-        @NotBlank(message = "Password is required")
-        @Size(min = 8, message = "Password must have at least 8 characters")
+        @NotBlank(message = "Field 'password' is required")
+        @Size(min = 8, message = "Field 'password' must have at least 8 characters")
         String password,
 
-        @NotBlank(message = "User role is required")
+        @NotBlank(message = "Field 'userRole' is required")
         String userRole
 
 ) {}
