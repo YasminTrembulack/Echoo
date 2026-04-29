@@ -1,4 +1,4 @@
-package com.trycatchus.echoo.dto.responses.login;
+package com.trycatchus.echoo.dto.responses.auth;
 
 import java.util.UUID;
 
