@@ -1,17 +1,22 @@
 package com.trycatchus.echoo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.trycatchus.echoo.dto.payload.login.LoginPayload;
+import com.trycatchus.echoo.dto.payload.auth.DecodePayload;
+import com.trycatchus.echoo.dto.payload.auth.LoginPayload;
 import com.trycatchus.echoo.dto.responses.DataResponse;
-import com.trycatchus.echoo.dto.responses.login.AuthResponse;
+import com.trycatchus.echoo.dto.responses.UserResponse;
+import com.trycatchus.echoo.dto.responses.auth.AuthResponse;
 import com.trycatchus.echoo.interfaces.AuthService;
+
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController()
 @RequestMapping("/auth")
-
 public class AuthController {
 
     private final AuthService authService;
@@ -20,15 +25,15 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/login")
-    public DataResponse<AuthResponse> login(LoginPayload payload) {
-        AuthResponse response = authService.loginAsync(payload);
+    @PostMapping("/login")
+    public DataResponse<AuthResponse> login(@RequestBody @Valid LoginPayload payload) {
+        AuthResponse response = authService.login(payload);
         return new DataResponse<AuthResponse>("Successful login.", response);
     }
 
-    @GetMapping("/decode")
-    public DataResponse<String> decodeToken(String token) {
-        var decodedToken = authService.decodeTokenAsync(token);
-        return new DataResponse<String>("Successful token decoding.", decodedToken.getSubject());
+    @PostMapping("/decode")
+    public DataResponse<UserResponse> verifyToken(@RequestBody @Valid DecodePayload payload) {
+        UserResponse response = authService.verifyToken(payload.token());
+        return new DataResponse<UserResponse>("Successful token decoding.", response);
     }
 }
