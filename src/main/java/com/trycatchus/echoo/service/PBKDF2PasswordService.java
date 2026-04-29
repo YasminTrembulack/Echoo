@@ -14,7 +14,8 @@ import javax.crypto.spec.PBEKeySpec;
 import org.springframework.stereotype.Service;
 
 import com.trycatchus.echoo.dto.system.PasswordVerification;
-import com.trycatchus.echoo.exception.ApplicationException;
+import com.trycatchus.echoo.exception.HashingAlgorithmException;
+import com.trycatchus.echoo.exception.KeySpecException;
 import com.trycatchus.echoo.interfaces.PasswordService;
 
 @Service
@@ -22,9 +23,8 @@ public class PBKDF2PasswordService implements PasswordService {
     private static int iterations = 65536;
 
     @Override
-    public String applyCriptography(String rawPassword)
-            throws ApplicationException {
-        var random = new SecureRandom();
+    public String applyCriptography(String rawPassword){
+        SecureRandom random = new SecureRandom();
 
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -38,17 +38,16 @@ public class PBKDF2PasswordService implements PasswordService {
 
             generatedHash = String.format("%s:%s:%s", iterations, toHex(salt), toHex(signature));
         } catch (NoSuchAlgorithmException ex) {
-            throw new ApplicationException(500, "Hashing algorithm incorrectly set in server.");
+            throw new HashingAlgorithmException();
         } catch (InvalidKeySpecException ex) {
-            throw new ApplicationException(500, "Key specification incorrectly set in server.");
+            throw new KeySpecException();
         }
 
         return generatedHash;
     }
 
     @Override
-    public Boolean matchPasswords(String rawPassword, String hashedPassword)
-            throws ApplicationException {
+    public Boolean matchPasswords(String rawPassword, String hashedPassword){
         String[] params = hashedPassword.split(":");
 
         int iterations = Integer.parseInt(params[0]);
@@ -66,9 +65,9 @@ public class PBKDF2PasswordService implements PasswordService {
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             validationSignature = skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException ex) {
-            throw new ApplicationException(500, "Hashing algorithm incorrectly set in server.");
+            throw new HashingAlgorithmException();
         } catch (InvalidKeySpecException ex) {
-            throw new ApplicationException(500, "Key specification incorrectly set in server.");
+            throw new KeySpecException();
         }
 
         return Arrays.equals(signature, validationSignature);
@@ -86,7 +85,7 @@ public class PBKDF2PasswordService implements PasswordService {
 
         boolean number = (containsNumber(rawPassword));
 
-        var isValid = (length &&
+        boolean isValid = (length &&
                 lowerCase &&
                 upperCase &&
                 specialChar &&
@@ -106,21 +105,15 @@ public class PBKDF2PasswordService implements PasswordService {
     }
 
     private boolean containsLowerCase(String value) {
-        return contains(
-                value,
-                i -> Character.isLetter(i) && Character.isLowerCase(i));
+        return contains(value, i -> Character.isLetter(i) && Character.isLowerCase(i));
     }
 
     private boolean containsUpperCase(String value) {
-        return contains(
-                value,
-                i -> Character.isLetter(i) && Character.isUpperCase(i));
+        return contains(value, i -> Character.isLetter(i) && Character.isUpperCase(i));
     }
 
     private boolean containsSpecialCharacter(String value) {
-        return contains(
-                value,
-                i -> !Character.isLetterOrDigit(i) && !Character.isWhitespace(i));
+        return contains(value, i -> !Character.isLetterOrDigit(i) && !Character.isWhitespace(i));
     }
 
     private boolean containsNumber(String value) {
