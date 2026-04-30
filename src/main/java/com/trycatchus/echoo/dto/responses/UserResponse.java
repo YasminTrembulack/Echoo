@@ -9,7 +9,7 @@ public record UserResponse(
         String birthDate,
         String email,
         String userRole,
-
         String createdAt,
         String updatedAt
+
 ) {}

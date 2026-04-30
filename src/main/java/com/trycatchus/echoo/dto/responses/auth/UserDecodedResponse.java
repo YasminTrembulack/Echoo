@@ -5,4 +5,5 @@ public record UserDecodedResponse(
     String firstName,
     String username,
     String role
+
 ) {}

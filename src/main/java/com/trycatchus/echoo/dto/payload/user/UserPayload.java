@@ -11,7 +11,6 @@ import com.trycatchus.echoo.enums.UserRole;
 
 
 public record UserPayload(
-
         @NotBlank(message = "Field 'firstName' is required")
         String firstName,
 
