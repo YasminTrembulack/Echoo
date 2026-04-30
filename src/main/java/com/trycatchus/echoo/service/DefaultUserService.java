@@ -72,7 +72,7 @@ public class DefaultUserService implements UserService {
     public UserResponse update(String id, UserUpdatePayload request) {
         validateUniqueFields(request.email(), request.cpf(), request.username(), id);
 
-        var user = userRepo.findById(UUID.fromString(id))
+        User user = userRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
 
         user.setFirstName(UpdateUtils.valueOrKeep(request.firstName(), user.getFirstName()));
@@ -90,7 +90,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void delete(String id) {
-        var user = userRepo.findById(UUID.fromString(id))
+        User user = userRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
 
         userRepo.delete(user);
@@ -98,7 +98,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public UserResponse findById(String id) {
-        var user = userRepo.findById(UUID.fromString(id))
+        User user = userRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
 
         return userMapper.toResponse(user);
@@ -106,7 +106,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public List<UserResponse> findAll() {
-        var users = userRepo.findAll();
+        List<User> users = userRepo.findAll();
 
         return users.stream().map(userMapper::toResponse).collect(Collectors.toList());
     }
