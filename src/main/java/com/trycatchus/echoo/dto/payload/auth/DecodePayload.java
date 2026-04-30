@@ -7,5 +7,4 @@ public record DecodePayload(
     @NotBlank(message = "Field 'token' is required")
     String token
 
-)
-{ }
+) {}

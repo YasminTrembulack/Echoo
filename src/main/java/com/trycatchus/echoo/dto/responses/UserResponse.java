@@ -11,5 +11,5 @@ public record UserResponse(
         String userRole,
 
         String createdAt,
-        String updatedAt) {
-}
+        String updatedAt
+) {}

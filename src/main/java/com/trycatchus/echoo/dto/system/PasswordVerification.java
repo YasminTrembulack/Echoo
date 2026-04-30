@@ -7,4 +7,4 @@ public record PasswordVerification(
     boolean hasLowerCase,
     boolean hasNumber,
     boolean hasSpecialChar
-) { }
+) {}

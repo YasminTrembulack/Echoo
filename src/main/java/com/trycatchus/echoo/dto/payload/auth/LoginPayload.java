@@ -9,5 +9,4 @@ public record LoginPayload(
 
     @NotBlank(message = "Field 'password' is required")
     String password
-)
-{ }
+) {}
