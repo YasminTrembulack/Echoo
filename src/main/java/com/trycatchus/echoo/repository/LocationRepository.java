@@ -14,6 +14,12 @@ public interface LocationRepository extends JpaRepository<Location, UUID> {
         WHERE l.postalCode = :postalCode
         AND l.complement = :complement
         AND l.number = :number
+        AND l.id != :locationIdToExclude
     """)
-    Optional<Location> findConflictingLocations(String postalCode, String complement, String number);
+    Optional<Location> findConflictingLocations(
+        String postalCode, 
+        String complement, 
+        String number,
+        UUID locationIdToExclude
+    );
 }

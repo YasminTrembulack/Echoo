@@ -2,6 +2,8 @@ package com.trycatchus.echoo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -27,10 +29,9 @@ public class DefaultLocationService implements LocationService {
         this.locationMapper = locationMapper;
     }
 
-    private void validateUniqueFields(String postalCode, String complement, String number) {
-        Optional<Location> existingLocation =
-            locationRepo.findConflictingLocations(postalCode, complement, number);
-        
+    private void validateUniqueFields(String postalCode, String complement, String number, UUID locationIdToExclude) {
+        Optional<Location> existingLocation = locationRepo.findConflictingLocations(
+            postalCode, complement, number, locationIdToExclude);
         
         if (existingLocation.isPresent()) {
             List<String> uniqueFields = List.of("postalCode", "complement", "number");
@@ -40,7 +41,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public LocationResponse create(LocationPayload payload) {
-        validateUniqueFields(payload.postalCode(), payload.complement(), payload.number());
+        validateUniqueFields(payload.postalCode(), payload.complement(), payload.number(), null);
 
         Location location = locationMapper.toEntity(payload);
 
@@ -58,7 +59,7 @@ public class DefaultLocationService implements LocationService {
         location.setComplement(UpdateUtils.valueOrKeep(payload.complement(), location.getComplement()));
         location.setNumber(UpdateUtils.valueOrKeep(payload.number(), location.getNumber()));
         
-        validateUniqueFields(location.getPostalCode(), location.getComplement(), location.getNumber());
+        validateUniqueFields(location.getPostalCode(), location.getComplement(), location.getNumber(), location.getId());
 
         location.setEstablishment(UpdateUtils.valueOrKeep(payload.establishment(), location.getEstablishment()));
         location.setNeighborhood(UpdateUtils.valueOrKeep(payload.neighborhood(), location.getNeighborhood()));
@@ -92,7 +93,7 @@ public class DefaultLocationService implements LocationService {
     
         return locations.stream()
             .map(locationMapper::toResponse)
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
     }
     
 }
