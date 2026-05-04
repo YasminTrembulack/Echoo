@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                 // req.requestMatchers("/**").permitAll(); // ! Only for testing, remove in production
                 req.requestMatchers("/auth/**").permitAll();
                 req.requestMatchers("/admin/**").hasRole("ADMIN");
+                req.requestMatchers("/events/create", "/events/update", "/events/delete").hasAnyRole("ORGANIZER", "ADMIN");
                 req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
                 req.anyRequest().authenticated();
