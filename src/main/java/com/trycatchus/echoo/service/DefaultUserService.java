@@ -9,15 +9,19 @@ import org.springframework.stereotype.Service;
 import com.trycatchus.echoo.dto.payload.user.UserPayload;
 import com.trycatchus.echoo.dto.payload.user.UserUpdatePayload;
 import com.trycatchus.echoo.dto.responses.UserResponse;
+import com.trycatchus.echoo.dto.responses.auth.UserDecodedResponse;
 import com.trycatchus.echoo.dto.system.PasswordVerification;
+import com.trycatchus.echoo.enums.UserRole;
 import com.trycatchus.echoo.exception.EntityNotFoundException;
 import com.trycatchus.echoo.exception.PasswordValidationException;
+import com.trycatchus.echoo.exception.UnauthorizedException;
 import com.trycatchus.echoo.exception.UniqueFieldAlreadyInUseException;
 import com.trycatchus.echoo.interfaces.PasswordService;
 import com.trycatchus.echoo.interfaces.UserService;
 import com.trycatchus.echoo.mapper.UserMapper;
 import com.trycatchus.echoo.model.User;
 import com.trycatchus.echoo.repository.UserRepository;
+import com.trycatchus.echoo.utils.SecurityUtils;
 import com.trycatchus.echoo.utils.UpdateUtils;
 
 @Service
@@ -31,6 +35,15 @@ public class DefaultUserService implements UserService {
         this.userRepo = userRepo;
         this.passwordService = passwordService;
         this.userMapper = userMapper;
+    }
+
+    private void validateUserOwnership(User user) {
+        UserDecodedResponse currentUser = SecurityUtils.getCurrentUser();
+
+        UserRole userRole = UserRole.fromString(currentUser.role());
+
+        if (!user.getId().toString().equals(currentUser.userId()) && userRole != UserRole.ADMIN)
+            throw new UnauthorizedException("You are not authorized to perform this action");
     }
 
     @Override
@@ -70,10 +83,12 @@ public class DefaultUserService implements UserService {
 
     @Override
     public UserResponse update(String id, UserUpdatePayload request) {
-        validateUniqueFields(request.email(), request.cpf(), request.username(), id);
-
         User user = userRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
+
+        validateUserOwnership(user);
+    
+        validateUniqueFields(request.email(), request.cpf(), request.username(), id);
 
         user.setFirstName(UpdateUtils.valueOrKeep(request.firstName(), user.getFirstName()));
         user.setLastName(UpdateUtils.valueOrKeep(request.lastName(), user.getLastName()));
@@ -92,6 +107,8 @@ public class DefaultUserService implements UserService {
     public void delete(String id) {
         User user = userRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
+        
+        validateUserOwnership(user);
 
         userRepo.delete(user);
     }
@@ -108,7 +125,9 @@ public class DefaultUserService implements UserService {
     public List<UserResponse> findAll() {
         List<User> users = userRepo.findAll();
 
-        return users.stream().map(userMapper::toResponse).collect(Collectors.toList());
+        return users.stream()
+            .map(userMapper::toResponse)
+            .collect(Collectors.toList());
     }
 
 }
