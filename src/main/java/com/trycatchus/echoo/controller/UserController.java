@@ -1,5 +1,7 @@
 package com.trycatchus.echoo.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,9 +60,9 @@ public class UserController {
     }
     
     @GetMapping
-    public DataResponse<java.util.List<UserResponse>> getAllUsers() {
-        java.util.List<UserResponse> response = userService.findAll();
-        return new DataResponse<java.util.List<UserResponse>>("Users retrieved successfully", response);
+    public DataResponse<List<UserResponse>> getAllUsers() {
+        List<UserResponse> response = userService.findAll();
+        return new DataResponse<List<UserResponse>>("Users retrieved successfully", response);
     }
 
 }

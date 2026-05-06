@@ -1,5 +1,7 @@
 package com.trycatchus.echoo.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,9 +60,9 @@ public class EventController {
     }
     
     @GetMapping
-    public DataResponse<java.util.List<EventResponse>> getAllEvents() {
-        java.util.List<EventResponse> response = eventService.findAll();
-        return new DataResponse<java.util.List<EventResponse>>("Events retrieved successfully", response);
+    public DataResponse<List<EventResponse>> getAllEvents() {
+        List<EventResponse> response = eventService.findAll();
+        return new DataResponse<List<EventResponse>>("Events retrieved successfully", response);
     }
 
 }
