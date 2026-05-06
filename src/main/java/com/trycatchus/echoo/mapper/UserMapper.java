@@ -9,8 +9,6 @@ import com.trycatchus.echoo.dto.responses.UserResponse;
 
 @Mapper(
     componentModel = "spring", 
-    unmappedTargetPolicy = 
-        ReportingPolicy.IGNORE, 
-        imports = {java.time.LocalDate.class, com.trycatchus.echoo.enums.UserRole.class}
+    unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface UserMapper extends BaseMapper<UserPayload, User, UserResponse> { }
