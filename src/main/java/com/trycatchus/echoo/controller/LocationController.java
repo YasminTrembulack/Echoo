@@ -1,5 +1,7 @@
 package com.trycatchus.echoo.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,7 @@ import com.trycatchus.echoo.dto.payload.location.LocationPayload;
 import com.trycatchus.echoo.dto.payload.location.LocationUpdatePayload;
 import com.trycatchus.echoo.dto.responses.DataResponse;
 import com.trycatchus.echoo.dto.responses.LocationResponse;
+import com.trycatchus.echoo.interfaces.AddressLookupService;
 import com.trycatchus.echoo.interfaces.LocationService;
 
 import jakarta.validation.Valid;
@@ -25,8 +28,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class LocationController {
 
     private final LocationService locationService;
+    private final AddressLookupService addressLookupService;
 
-    public LocationController(LocationService locationService) {
+    public LocationController(LocationService locationService, AddressLookupService addressLookupService) {
+        this.addressLookupService = addressLookupService;
         this.locationService = locationService;
     }
 
@@ -54,13 +59,19 @@ public class LocationController {
     @GetMapping("/{id}")
     public DataResponse<LocationResponse> getLocation(@PathVariable String id) {
         LocationResponse response = locationService.findById(id);
-        return new DataResponse<LocationResponse>("Location retrieved successfully", response);
+        return new DataResponse<LocationResponse>("Location retrieved ", response);
     }
     
     @GetMapping
-    public DataResponse<java.util.List<LocationResponse>> getAllLocations() {
-        java.util.List<LocationResponse> response = locationService.findAll();
-        return new DataResponse<java.util.List<LocationResponse>>("Locations retrieved successfully", response);
+    public DataResponse<List<LocationResponse>> getAllLocations() {
+        List<LocationResponse> response = locationService.findAll();
+        return new DataResponse<List<LocationResponse>>("Locations retrieved successfully", response);
+    }
+
+    @GetMapping("/lookup/{postalCode}")
+    public DataResponse<LocationResponse> getLocationByPostalCode(@PathVariable String postalCode){
+        LocationResponse response = addressLookupService.lookup(postalCode);
+        return new DataResponse<LocationResponse>("Location found successfully", response);
     }
 
 }
