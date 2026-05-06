@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret key used to sign and validate JWT tokens. Must be a strong, secure, and private value."
+    },
+    {
+      "name": "jwt.expirationSeconds",
+      "type": "java.lang.Long",
+      "description": "Token expiration time in seconds. Defines how long a JWT remains valid after being issued."
+    },
+    {
+      "name": "viacep.baseUrl",
+      "type": "java.lang.String",
+      "description": "Base URL for the ViaCEP API used to fetch address information by postal code (CEP). Example: https://viacep.com.br/ws"
+    }
+  ]
+}
