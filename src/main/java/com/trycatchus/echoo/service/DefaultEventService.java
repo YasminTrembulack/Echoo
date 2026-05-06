@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
 import com.trycatchus.echoo.dto.payload.event.EventPayload;
 import com.trycatchus.echoo.dto.payload.event.EventUpdatePayload;
 import com.trycatchus.echoo.dto.responses.EventResponse;
@@ -25,7 +27,7 @@ import com.trycatchus.echoo.repository.UserRepository;
 import com.trycatchus.echoo.utils.SecurityUtils;
 import com.trycatchus.echoo.utils.UpdateUtils;
 
-
+@Service
 public class DefaultEventService implements EventService {
 
     private final LocationRepository locationRepository;
