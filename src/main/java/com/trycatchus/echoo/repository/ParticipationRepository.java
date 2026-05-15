@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.trycatchus.echoo.model.Participation;
+import com.trycatchus.echoo.models.Participation;
 
 public interface ParticipationRepository extends JpaRepository<Participation, UUID> {
 

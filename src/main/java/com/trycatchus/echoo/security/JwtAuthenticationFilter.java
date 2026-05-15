@@ -6,9 +6,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.trycatchus.echoo.dto.responses.auth.UserDecodedResponse;
-import com.trycatchus.echoo.exception.JwtAuthenticationException;
-import com.trycatchus.echoo.service.Auth0JwtService;
+import com.trycatchus.echoo.dtos.responses.auth.UserDecodedResponse;
+import com.trycatchus.echoo.exceptions.JwtAuthenticationException;
+import com.trycatchus.echoo.services.Auth0JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

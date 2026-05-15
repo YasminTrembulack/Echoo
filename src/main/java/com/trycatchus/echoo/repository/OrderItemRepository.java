@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.trycatchus.echoo.model.OrderItem;
+import com.trycatchus.echoo.models.OrderItem;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
 

@@ -1,0 +1,31 @@
+package com.trycatchus.echoo.exceptions;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.trycatchus.echoo.dtos.responses.ErrorResponse;
+
+
+@ControllerAdvice
+public class ApplicationExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException( MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        return ResponseEntity.status(400).body(new ErrorResponse(400, errorMessage));
+    }
+
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException ex) {
+        return ResponseEntity.status(ex.getErrorResponse().statusCode()).body(ex.getErrorResponse());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        ex.printStackTrace();
+        ErrorResponse errorResponse = new ErrorResponse(500, "Internal server error");
+        return ResponseEntity.status(500).body(errorResponse);
+    }
+}

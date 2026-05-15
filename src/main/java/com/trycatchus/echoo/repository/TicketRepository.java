@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.trycatchus.echoo.model.Ticket;
+import com.trycatchus.echoo.models.Ticket;
 
 public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 

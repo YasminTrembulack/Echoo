@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.trycatchus.echoo.model.Event;
+import com.trycatchus.echoo.models.Event;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("""

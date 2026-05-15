@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.trycatchus.echoo.model.Theme;
+import com.trycatchus.echoo.models.Theme;
 
 public interface ThemeRepository extends JpaRepository<Theme, UUID> {
     @Query("""

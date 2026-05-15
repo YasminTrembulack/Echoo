@@ -1,6 +1,6 @@
 package com.trycatchus.echoo.interfaces;
 
-import com.trycatchus.echoo.dto.system.PasswordVerification;
+import com.trycatchus.echoo.dtos.system.PasswordVerification;
 
 public interface PasswordService {
     String applyCriptography(String rawPassword);

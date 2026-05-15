@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.trycatchus.echoo.model.Location;
+import com.trycatchus.echoo.models.Location;
 
 public interface LocationRepository extends JpaRepository<Location, UUID> {
     @Query("""

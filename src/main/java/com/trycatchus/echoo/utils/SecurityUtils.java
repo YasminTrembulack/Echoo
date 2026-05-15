@@ -2,7 +2,7 @@ package com.trycatchus.echoo.utils;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.trycatchus.echoo.dto.responses.auth.UserDecodedResponse;
+import com.trycatchus.echoo.dtos.responses.auth.UserDecodedResponse;
 
 public class SecurityUtils {
     public static UserDecodedResponse getCurrentUser() {

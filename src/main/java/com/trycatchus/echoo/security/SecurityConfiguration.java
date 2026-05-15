@@ -15,7 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.trycatchus.echoo.service.Auth0JwtService;
+import com.trycatchus.echoo.services.Auth0JwtService;
 
 @Configuration
 @EnableWebSecurity
