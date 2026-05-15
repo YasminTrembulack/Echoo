@@ -25,34 +25,35 @@ import com.trycatchus.echoo.repository.EventRepository;
 import com.trycatchus.echoo.repository.LocationRepository;
 import com.trycatchus.echoo.repository.UserRepository;
 import com.trycatchus.echoo.utils.SecurityUtils;
+import com.trycatchus.echoo.utils.SlugUtils;
 import com.trycatchus.echoo.utils.UpdateUtils;
 
 @Service
 public class DefaultEventService implements EventService {
 
-    private final LocationRepository locationRepository;
-    private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final LocationRepository locationRepo;
+    private final EventRepository eventRepo;
+    private final UserRepository userRepo;
     private final EventMapper eventMapper;
 
     public DefaultEventService(
-        LocationRepository locationRepository, 
-        EventRepository eventRepository, 
-        UserRepository userRepository, 
+        LocationRepository locationRepo, 
+        EventRepository eventRepo, 
+        UserRepository userRepo, 
         EventMapper eventMapper) {
-        this.locationRepository = locationRepository;
-        this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
+        this.locationRepo = locationRepo;
+        this.eventRepo = eventRepo;
+        this.userRepo = userRepo;
         this.eventMapper = eventMapper;
     }
 
     private void validateEventConflicts(LocalDateTime startDate, LocalDateTime endDate, UUID locationId, UUID eventIdToExclude) {
-        Boolean exists = eventRepository.existsConflictingEvent(
+        Boolean exists = eventRepo.existsConflictingEvent(
             startDate, endDate, locationId, eventIdToExclude);
         
         if (exists) {
             List<String> uniqueFields = List.of("startDate", "endDate", "locationId");
-            throw new UniqueFieldAlreadyInUseException("Event", uniqueFields);
+            throw new UniqueFieldAlreadyInUseException(Event.class, uniqueFields);
         }
     }
 
@@ -72,12 +73,12 @@ public class DefaultEventService implements EventService {
     }
 
     private User getOrganizerById(String organizerId) {
-        return userRepository.findById(UUID.fromString(organizerId))
+        return userRepo.findById(UUID.fromString(organizerId))
             .orElseThrow(() -> new EntityNotFoundException(User.class));
     }
 
     private Location getLocationById(String locationId) {
-        return locationRepository.findById(UUID.fromString(locationId))
+        return locationRepo.findById(UUID.fromString(locationId))
             .orElseThrow(() -> new EntityNotFoundException(Location.class));
     }
         
@@ -106,14 +107,16 @@ public class DefaultEventService implements EventService {
             event.setLocation(location);
         }
 
-        Event savedEvent = eventRepository.save(event);
+        event.setSlug(SlugUtils.generateUniqueSlug(payload.name()));
+
+        Event savedEvent = eventRepo.save(event);
 
         return eventMapper.toResponse(savedEvent);
     }
 
     @Override
     public EventResponse update(String id, EventUpdatePayload payload) {
-        Event event = eventRepository.findById(UUID.fromString(id))
+        Event event = eventRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Event.class));
 
         validateEventOwnership(event);
@@ -146,7 +149,7 @@ public class DefaultEventService implements EventService {
             event.setOrganizer(organizer);
         }
 
-        Event updatedEvent = eventRepository.save(event);
+        Event updatedEvent = eventRepo.save(event);
 
         return eventMapper.toResponse(updatedEvent);
 
@@ -154,17 +157,17 @@ public class DefaultEventService implements EventService {
 
     @Override
     public void delete(String id) {
-        Event event = eventRepository.findById(UUID.fromString(id))
+        Event event = eventRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Event.class));
         
         validateEventOwnership(event);
         
-        eventRepository.delete(event);
+        eventRepo.delete(event);
     }
 
     @Override
     public EventResponse findById(String id) {
-        Event event = eventRepository.findById(UUID.fromString(id))
+        Event event = eventRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Event.class));
         
         return eventMapper.toResponse(event);
@@ -172,7 +175,7 @@ public class DefaultEventService implements EventService {
 
     @Override
     public List<EventResponse> findAll() {
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventRepo.findAll();
 
         return events.stream()
             .map(eventMapper::toResponse)

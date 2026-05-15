@@ -1,7 +1,6 @@
 package com.trycatchus.echoo.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,12 +29,12 @@ public class DefaultLocationService implements LocationService {
     }
 
     private void validateUniqueFields(String postalCode, String complement, String number, UUID locationIdToExclude) {
-        Optional<Location> existingLocation = locationRepo.findConflictingLocations(
+        Boolean exists = locationRepo.existsConflictingLocation(
             postalCode, complement, number, locationIdToExclude);
         
-        if (existingLocation.isPresent()) {
+        if (exists) {
             List<String> uniqueFields = List.of("postalCode", "complement", "number");
-            throw new UniqueFieldAlreadyInUseException("Location", uniqueFields);
+            throw new UniqueFieldAlreadyInUseException(Location.class, uniqueFields);
         }
     }
 
@@ -68,7 +67,9 @@ public class DefaultLocationService implements LocationService {
         location.setState(UpdateUtils.valueOrKeep(payload.state(), location.getState()));
         location.setCity(UpdateUtils.valueOrKeep(payload.city(), location.getCity()));
 
-        return locationMapper.toResponse(location);
+        Location updatedLocation = locationRepo.save(location);
+
+        return locationMapper.toResponse(updatedLocation);
     }
 
     @Override

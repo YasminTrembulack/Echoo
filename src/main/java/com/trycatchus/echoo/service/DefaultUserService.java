@@ -59,9 +59,9 @@ public class DefaultUserService implements UserService {
 
         user.setPasswordHash(passwordService.applyCriptography(request.password()));
 
-        User newUser = userRepo.saveAndFlush(user);
+        User savedUser = userRepo.saveAndFlush(user);
 
-        return userMapper.toResponse(newUser);
+        return userMapper.toResponse(savedUser);
     }
 
     private void validateUniqueFields(String email, String cpf, String username, String excludeId) {
@@ -76,9 +76,8 @@ public class DefaultUserService implements UserService {
             if (u.getUsername().equals(username)) errors.add("username");
         }
 
-        if (!errors.isEmpty()) {
-            throw new UniqueFieldAlreadyInUseException("User", errors);
-        }
+        if (!errors.isEmpty())
+            throw new UniqueFieldAlreadyInUseException(User.class, errors);
     }
 
     @Override
