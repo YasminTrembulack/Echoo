@@ -8,7 +8,7 @@ public class EntityNotFoundException extends ApplicationException {
         super(404, message);
     }
 
-    public EntityNotFoundException(Class<?> entityName ) {
-        super(404, entityName.getSimpleName().toString() + " not found.");
+    public EntityNotFoundException(Class<?> entity) {
+        super(404, entity.getSimpleName().toString() + " not found.");
     }
 }
