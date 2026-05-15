@@ -23,4 +23,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         UUID locationId,
         UUID eventIdToExclude
     );
+
+    Boolean existsBySlug(String slug);
+
 }
