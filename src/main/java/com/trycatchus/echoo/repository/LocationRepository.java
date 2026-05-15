@@ -1,6 +1,5 @@
 package com.trycatchus.echoo.repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +15,7 @@ public interface LocationRepository extends JpaRepository<Location, UUID> {
         AND l.number = :number
         AND l.id != :locationIdToExclude
     """)
-    Optional<Location> findConflictingLocations(
+    Boolean existsConflictingLocation(
         String postalCode, 
         String complement, 
         String number,
