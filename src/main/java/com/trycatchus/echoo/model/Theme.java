@@ -21,5 +21,8 @@ public class Theme extends BaseEntity {
 
     @Column(length = 255, nullable = true)
     private String description;
+    
+    @Column(length = 50, unique = true, nullable = false)
+    private String slug;
 
 }

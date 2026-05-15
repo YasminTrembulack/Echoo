@@ -72,6 +72,8 @@ CREATE TABLE events (
     location_id UUID,
     organizer_id UUID NOT NULL,
 
+    slug VARCHAR(150) UNIQUE NOT NULL,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -83,6 +85,7 @@ CREATE TABLE themes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(30) UNIQUE NOT NULL,
     description VARCHAR(255),
+    slug VARCHAR(50) UNIQUE NOT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

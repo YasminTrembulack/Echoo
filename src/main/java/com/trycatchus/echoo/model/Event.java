@@ -29,6 +29,9 @@ public class Event extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String name;
 
+    @Column(length = 150, unique = true, nullable = false)
+    private String slug;
+
     @Column(length = 255)
     private String description;
 
