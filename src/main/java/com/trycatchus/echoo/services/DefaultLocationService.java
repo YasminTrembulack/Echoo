@@ -51,7 +51,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public LocationResponse update(String id, LocationUpdatePayload payload) {
-        Location location = locationRepo.findById(java.util.UUID.fromString(id))
+        Location location = locationRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Location.class));
         
         location.setPostalCode(UpdateUtils.valueOrKeep(payload.postalCode(), location.getPostalCode()));
@@ -74,7 +74,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public void delete(String id) {
-        Location location = locationRepo.findById(java.util.UUID.fromString(id))
+        Location location = locationRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Location.class));
 
         locationRepo.delete(location);
@@ -82,7 +82,7 @@ public class DefaultLocationService implements LocationService {
 
     @Override
     public LocationResponse findById(String id) {
-        Location location = locationRepo.findById(java.util.UUID.fromString(id))
+        Location location = locationRepo.findById(UUID.fromString(id))
             .orElseThrow(() -> new EntityNotFoundException(Location.class));
 
         return locationMapper.toResponse(location);
