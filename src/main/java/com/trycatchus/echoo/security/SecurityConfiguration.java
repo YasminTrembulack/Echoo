@@ -41,10 +41,40 @@ public class SecurityConfiguration {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(req -> {
-                // req.requestMatchers("/**").permitAll(); // ! Only for testing, remove in production
                 req.requestMatchers("/auth/**").permitAll();
-                req.requestMatchers("/admin/**").hasRole("ADMIN");
-                req.requestMatchers("/events/create", "/events/update", "/events/delete").hasAnyRole("ORGANIZER", "ADMIN");
+
+                //* ADMIN *//
+                req.requestMatchers("/admin/**")
+                    .hasRole("ADMIN");
+
+                //* USERS *//
+                req.requestMatchers(HttpMethod.POST, "/users")
+                    .hasRole("ADMIN");
+
+                //* LOCATIONS *//
+                req.requestMatchers(HttpMethod.POST, "/locations")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.PATCH, "/locations/**")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.DELETE, "/locations/**")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+        
+                //* EVENTS *//
+                req.requestMatchers(HttpMethod.POST, "/events")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.PATCH, "/events/**")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.DELETE, "/events/**")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                
+                //* THEMES *//
+                req.requestMatchers(HttpMethod.POST, "/themes")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.PATCH, "/themes/**")
+                    .hasAnyRole("ORGANIZER", "ADMIN");
+                req.requestMatchers(HttpMethod.DELETE, "/themes/**")
+                    .hasRole("ADMIN");
+
                 req.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
                 req.anyRequest().authenticated();
