@@ -5,8 +5,4 @@ public enum OrderStatus {
     PAID,
     CANCELLED,
     REFUNDED;
-
-    public static OrderStatus fromString(String status) {
-        return OrderStatus.valueOf(status.toUpperCase());
-    }
 }

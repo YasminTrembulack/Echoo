@@ -5,9 +5,4 @@ public enum PaymentMethod {
     DEBIT_CARD,
     PAYPAL,
     BANK_TRANSFER;
-
-    public static PaymentMethod fromString(String method) {
-        return PaymentMethod.valueOf(method.toUpperCase());
-    }
-
 }

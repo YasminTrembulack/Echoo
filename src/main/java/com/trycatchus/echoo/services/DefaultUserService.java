@@ -21,6 +21,7 @@ import com.trycatchus.echoo.interfaces.UserService;
 import com.trycatchus.echoo.mappers.UserMapper;
 import com.trycatchus.echoo.models.User;
 import com.trycatchus.echoo.repository.UserRepository;
+import com.trycatchus.echoo.utils.EnumUtils;
 import com.trycatchus.echoo.utils.SecurityUtils;
 import com.trycatchus.echoo.utils.UpdateUtils;
 
@@ -40,7 +41,7 @@ public class DefaultUserService implements UserService {
     private void validateUserOwnership(User user) {
         UserDecodedResponse currentUser = SecurityUtils.getCurrentUser();
 
-        UserRole userRole = UserRole.fromString(currentUser.role());
+        UserRole userRole = EnumUtils.fromString(UserRole.class, currentUser.role());
 
         if (!user.getId().toString().equals(currentUser.userId()) && userRole != UserRole.ADMIN)
             throw new UnauthorizedException("You are not authorized to perform this action");

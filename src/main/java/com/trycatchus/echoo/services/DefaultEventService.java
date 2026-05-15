@@ -24,6 +24,7 @@ import com.trycatchus.echoo.models.User;
 import com.trycatchus.echoo.repository.EventRepository;
 import com.trycatchus.echoo.repository.LocationRepository;
 import com.trycatchus.echoo.repository.UserRepository;
+import com.trycatchus.echoo.utils.EnumUtils;
 import com.trycatchus.echoo.utils.SecurityUtils;
 import com.trycatchus.echoo.utils.SlugUtils;
 import com.trycatchus.echoo.utils.UpdateUtils;
@@ -60,7 +61,7 @@ public class DefaultEventService implements EventService {
     private void validateEventOwnership(Event event) {
         UserDecodedResponse user = SecurityUtils.getCurrentUser();
 
-        UserRole userRole = UserRole.fromString(user.role());
+        UserRole userRole = EnumUtils.fromString(UserRole.class, user.role());
 
         if (!event.getOrganizer().getId().toString().equals(user.userId()) && userRole != UserRole.ADMIN) {
             throw new UnauthorizedException("You are not the organizer of this event.");
